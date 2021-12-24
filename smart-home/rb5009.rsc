@@ -34,6 +34,12 @@ add bridge=bridge tagged=\
 add bridge=bridge tagged=\
     bridge,ether2,ether3,ether4,ether5,ether6,sfp-sfpplus1 vlan-ids=119
 
+/interface vlan
+add interface=bridge name=vlan-base vlan-id=99
+add interface=bridge name=vlan-guest vlan-id=101
+add interface=bridge name=vlan-iot vlan-id=107
+add interface=bridge name=vlan-security vlan-id=119
+
 /interface list
 add name=WAN
 add name=VLAN
@@ -47,12 +53,6 @@ add interface=vlan-base list=BASE
 add interface=vlan-base list=VLAN
 add interface=ether7-Access list=BASE
 add interface=vlan-security list=VLAN
-
-/interface vlan
-add interface=bridge name=vlan-base vlan-id=99
-add interface=bridge name=vlan-guest vlan-id=101
-add interface=bridge name=vlan-iot vlan-id=107
-add interface=bridge name=vlan-security vlan-id=119
 
 /interface wireless security-profiles
 set [ find default=yes ] supplicant-identity=MikroTik

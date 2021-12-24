@@ -24,14 +24,14 @@ add bridge=bridge tagged=ether1,ether2 vlan-ids=101
 add bridge=bridge tagged=ether1,ether2 vlan-ids=107
 add bridge=bridge tagged=ether1,ether2 vlan-ids=119
 
+/interface vlan
+add interface=bridge name=vlan-base vlan-id=99
+
 /interface list
 add name=BASE
 
 /interface list member
 add interface=vlan-base list=BASE
-
-/interface vlan
-add interface=bridge name=vlan-base vlan-id=99
 
 /interface wireless security-profiles
 set [ find default=yes ] authentication-types=wpa2-psk eap-methods="" mode=\

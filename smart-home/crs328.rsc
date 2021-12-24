@@ -35,14 +35,14 @@ add bridge=bridge tagged=ether1,ether2,ether3,ether4 vlan-ids=107
 add bridge=bridge tagged=ether1,ether2,ether3,ether4 untagged=\
     ether9,ether10,ether11,ether12 vlan-ids=119
 
+/interface vlan
+add interface=bridge name=vlan-base vlan-id=99
+
 /interface list
 add name=BASE
 
 /interface list member
 add interface=vlan-base list=BASE
-
-/interface vlan
-add interface=bridge name=vlan-base vlan-id=99
 
 /interface wireless security-profiles
 set [ find default=yes ] supplicant-identity=MikroTik
