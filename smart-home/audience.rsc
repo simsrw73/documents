@@ -1,4 +1,4 @@
-# dec/24/2021 09:17:28 by RouterOS 7.1.1
+# dec/24/2021 10:09:41 by RouterOS 7.1.1
 # software id = L4BD-ZE0J
 #
 # model = RBD25G-5HPacQD2HPnD
@@ -57,6 +57,14 @@ add authentication-types=wpa2-psk eap-methods="" mode=dynamic-keys name=\
     profile-iot supplicant-identity=""
 add authentication-types=wpa2-psk eap-methods="" mode=dynamic-keys name=\
     profile-nest supplicant-identity=""
+
+/interface wireless
+set [ find default-name=wlan1 ] disabled=no installation=indoor mode=\
+    ap-bridge name=wlan-2g ssid=1736StrtfrdRmsCt wps-mode=disabled
+set [ find default-name=wlan2 ] disabled=no installation=indoor mode=\
+    ap-bridge name=wlan-5g ssid=1736StrtfrdRmsCt wireless-protocol=802.11 \
+    wps-mode=disabled
+set [ find default-name=wlan3 ] ssid=MikroTik
 
 /interface wireless
 add default-forwarding=no disabled=no keepalive-frames=disabled mac-address=\
@@ -155,6 +163,15 @@ add distance=1 gateway=192.168.99.1
 
 /ip neighbor discovery-settings
 set discover-interface-list=BASE
+
+/tool mac-server
+set allowed-interface-list=BASE
+
+/tool mac-server mac-winbox
+set allowed-interface-list=BASE
+
+/ip ssh
+set strong-crypto=yes
 
 /system clock
 set time-zone-name=America/New_York

@@ -1,4 +1,4 @@
-# dec/24/2021 09:21:35 by RouterOS 7.1.1
+# dec/24/2021 10:09:36 by RouterOS 7.1.1
 # software id = 1U75-R59F
 #
 # model = CRS112-8G-4S
@@ -69,6 +69,15 @@ add distance=1 gateway=192.168.99.1
 
 /ip neighbor discovery-settings
 set discover-interface-list=BASE
+
+/tool mac-server
+set allowed-interface-list=BASE
+
+/tool mac-server mac-winbox
+set allowed-interface-list=BASE
+
+/ip ssh
+set strong-crypto=yes
 
 /ip service
 set telnet disabled=yes

@@ -1,4 +1,4 @@
-# dec/24/2021 09:22:18 by RouterOS 7.1.1
+# dec/24/2021 10:08:20 by RouterOS 7.1.1
 # software id = SYTB-ZK4C
 #
 # model = RB5009UG+S+
@@ -97,8 +97,7 @@ add address=ec1a0fcc6b92.sn.mynetname.net list=WAN_IP
 /ip firewall filter
 add action=accept chain=input comment="defconf: accept established,related" \
     connection-state=established,related
-add action=accept chain=input comment="Allow VLAN" in-interface-list=VLAN \
-    log=yes
+add action=accept chain=input comment="Allow VLAN" in-interface-list=VLAN
 add action=accept chain=input comment="Allow VLAN_BASE" in-interface=\
     vlan-base log=yes
 add action=accept chain=input comment="Allow LAN NTP queries-UDP" dst-port=\
@@ -140,6 +139,15 @@ add action=dst-nat chain=dstnat comment="Port Fwd for Home Assistant" \
 
 /ip neighbor discovery-settings
 set discover-interface-list=BASE
+
+/tool mac-server
+set allowed-interface-list=BASE
+
+/tool mac-server mac-winbox
+set allowed-interface-list=BASE
+
+/ip ssh
+set strong-crypto=yes
 
 /ip service
 set telnet disabled=yes

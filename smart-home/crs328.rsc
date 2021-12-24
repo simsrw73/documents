@@ -1,4 +1,4 @@
-# dec/24/2021 09:16:51 by RouterOS 7.1.1
+# dec/24/2021 10:05:21 by RouterOS 7.1.1
 # software id = K7J1-43V8
 #
 # model = CRS328-24P-4S+
@@ -58,6 +58,15 @@ add disabled=no dst-address=0.0.0.0/0 gateway=192.168.99.1
 
 /ip neighbor discovery-settings
 set discover-interface-list=BASE
+
+/tool mac-server
+set allowed-interface-list=BASE
+
+/tool mac-server mac-winbox
+set allowed-interface-list=BASE
+
+/ip ssh
+set strong-crypto=yes
 
 /ip service
 set telnet disabled=yes
