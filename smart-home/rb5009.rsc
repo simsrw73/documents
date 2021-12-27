@@ -242,3 +242,25 @@ add comment="default share" directory=/pub name=pub
 /ip smb users
 add name=guest
 add name=guest
+
+/system scheduler
+add interval=25w5d name=schedule-UpdateCACerts on-event=\
+    "/system/script/run script-UpdateCACerts" policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon \
+    start-date=dec/30/2021 start-time=02:30:00
+
+/system script
+add dont-require-permissions=no name=script-UpdateCACerts owner=Yosef policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source="{\
+    \r\
+    \n  :do {\r\
+    \n      /tool fetch url=https://mkcert.org/generate/ check-certificate=yes\
+    \_dst-path=cacert.pem;\r\
+    \n      /certificate remove [ find where authority expired ];\r\
+    \n      /certificate import file-name=cacert.pem passphrase=\"\";\r\
+    \n      /file remove cacert.pem;\r\
+    \n      :log info (\"Updated certificate trust store\");\r\
+    \n  } on-error={\r\
+    \n      :log error (\"Failed to update certificate trust store\");\r\
+    \n  };\r\
+    \n}"
