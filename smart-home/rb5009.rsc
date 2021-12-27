@@ -91,6 +91,11 @@ add address=192.168.101.0/24 gateway=192.168.101.1
 add address=192.168.107.0/24 gateway=192.168.107.1
 add address=192.168.119.0/24 gateway=192.168.119.1
 
+/ip dhcp-server lease
+add address=192.168.99.10 client-id=1:8:0:27:37:29:fa comment=\
+    "Home Assistant (VM on DeskBox)" mac-address=08:00:27:37:29:FA server=\
+    dhcp-base
+
 /ip firewall address-list
 add address=ec1a0fcc6b92.sn.mynetname.net list=WAN_IP
 
