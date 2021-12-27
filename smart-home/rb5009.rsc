@@ -1,4 +1,4 @@
-# dec/24/2021 10:08:20 by RouterOS 7.1.1
+# dec/27/2021 13:27:43 by RouterOS 7.1.1
 # software id = SYTB-ZK4C
 #
 # model = RB5009UG+S+
@@ -63,7 +63,7 @@ set allow-remote-requests=yes servers=\
     https://family.cloudflare-dns.com/dns-query verify-doh-cert=yes
 
 /ip dhcp-client
-add interface=ether1
+add interface=ether1 use-peer-dns=no use-peer-ntp=no
 
 /ip address
 add address=192.168.99.1/24 interface=vlan-base network=192.168.99.0
@@ -232,7 +232,8 @@ set ddns-enabled=yes
 set enabled=yes
 
 /system ntp client servers
-add address=pool.ntp.org
+add address=time-d-g.nist.gov
+add address=time-c-g.nist.gov
 
 /system ntp server
 set broadcast=yes broadcast-addresses=192.168.99.255 enabled=yes
