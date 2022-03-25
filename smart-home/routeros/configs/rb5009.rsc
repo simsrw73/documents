@@ -1,4 +1,4 @@
-# mar/25/2022 08:07:37 by RouterOS 7.1.5
+# mar/25/2022 19:02:59 by RouterOS 7.1.5
 # software id = SYTB-ZK4C
 #
 # model = RB5009UG+S+
@@ -108,59 +108,41 @@ add address=192.168.99.0/24 list=Clients
 add action=accept chain=input comment=\
     "defconf: accept established,related,untracked" connection-state=\
     established,related,untracked
-add action=accept chain=input comment="Allow VLAN" in-interface-list=VLAN
 add action=accept chain=input comment="Allow VLAN_BASE" in-interface=\
-    vlan-base
-add action=accept chain=input connection-state=new dst-port=123 \
-    in-interface-list=VLAN log=yes log-prefix=NTP: protocol=udp
-add action=accept chain=input comment="Allow LAN NTP queries-UDP" \
-    connection-state=new dst-port=123 log=yes log-prefix=NTP:: protocol=udp
-add action=drop chain=input comment="defconf: drop invalid" connection-state=\
-    invalid log=yes log-prefix=IN_INVALID:
+    vlan-base log=yes log-prefix=BASE
 add action=accept chain=input comment="defconf: accept ICMP" protocol=icmp
 add action=accept chain=input comment=\
     "defconf: accept to local loopback (for CAPsMAN)" dst-address=127.0.0.1
-add action=drop chain=input comment="Drop if not from BASE vlan" \
-    in-interface-list=!BASE log=yes log-prefix=IN_NOTBASE
-add action=drop chain=input comment="Drop everything else" disabled=yes
-add action=accept chain=forward comment="Log NTP traffic" dst-port=123 log=\
-    yes log-prefix=NTP: protocol=udp
-add action=accept chain=forward comment="Allow connect to server from BASE" \
-    dst-address=192.168.200.10 log=yes log-prefix=SERVER:
-add action=accept chain=forward comment="defconf: accept in ipsec policy" \
-    ipsec-policy=in,ipsec
-add action=accept chain=forward comment="defconf: accept out ipsec policy" \
-    ipsec-policy=out,ipsec
+add action=drop chain=input comment="Drop everything else"
 add action=fasttrack-connection chain=forward comment="defconf: fasttrack" \
     connection-state=established,related hw-offload=yes
 add action=accept chain=forward comment=\
     "defconf: accept established,related,untracked" connection-state=\
     established,related,untracked
-add action=accept chain=forward comment="Accept DSTNATed" \
-    connection-nat-state=dstnat
-add action=drop chain=forward comment=\
-    "Isolation for wifi guest. Only allow internet." in-interface=vlan-guest \
-    log=yes log-prefix=FWD_ISOLATE: out-interface-list=!WAN
+add action=accept chain=forward comment="Allow VLAN" in-interface-list=VLAN \
+    log=yes log-prefix=VLAN out-interface-list=VLAN
 add action=accept chain=forward comment="Allow VLAN access Internet" \
     connection-state=new in-interface-list=VLAN log=yes log-prefix=\
     VLAN->INTERNET: out-interface-list=WAN
-add action=drop chain=forward comment="defconf: drop invalid" \
-    connection-state=invalid log=yes log-prefix=FWD_INVALID:
-add action=drop chain=forward comment=\
-    "defconf: drop all from WAN not DSTNATed" connection-nat-state=!dstnat \
-    connection-state=new in-interface-list=WAN log=yes log-prefix=\
-    FWD_NOTDSTNAT
-add action=drop chain=forward comment="Drop everything else" disabled=yes \
-    log=yes
+add action=accept chain=forward comment="Allow from WAN if DSTNATed" \
+    connection-nat-state=dstnat connection-state=new in-interface-list=WAN
+add action=accept chain=forward comment="defconf: accept in ipsec policy" \
+    ipsec-policy=in,ipsec
+add action=accept chain=forward comment="defconf: accept out ipsec policy" \
+    ipsec-policy=out,ipsec
+add action=drop chain=forward comment="Drop everything else" log=yes
 /ip firewall nat
 add action=dst-nat chain=dstnat comment="Port Fwd for WWW" dst-address-list=\
-    WAN_IP dst-port=80 in-interface=ether1 log=yes log-prefix=WWW protocol=\
-    tcp to-addresses=192.168.200.10 to-ports=80
+    WAN_IP dst-port=80 in-interface=ether1 protocol=tcp to-addresses=\
+    192.168.200.10 to-ports=80
+add action=src-nat chain=srcnat comment=\
+    "Translate NTP from 123 to 12300 to bypass AT&T block of port 123" \
+    protocol=udp src-port=123 to-ports=12300
 add action=masquerade chain=srcnat comment="Hairpin NAT" disabled=yes \
     dst-address=192.168.99.0/24 log=yes log-prefix="HAIRPIN: " src-address=\
     192.168.99.0/24
 add action=masquerade chain=srcnat comment="defconf: masquerade" \
-    ipsec-policy=out,none log=yes log-prefix="MASQ: " out-interface-list=WAN
+    ipsec-policy=out,none out-interface-list=WAN
 add action=dst-nat chain=dstnat comment="Port Fwd for Home Assistant" \
     disabled=yes dst-address-list=WAN_IP dst-port=8123 protocol=tcp \
     to-addresses=192.168.99.10
@@ -246,7 +228,7 @@ set name=RT1-Office-NR2
 /system ntp client
 set enabled=yes
 /system ntp server
-set manycast=yes
+set enabled=yes manycast=yes multicast=yes
 /system ntp client servers
 add address=0.north-america.pool.ntp.org
 add address=1.north-america.pool.ntp.org

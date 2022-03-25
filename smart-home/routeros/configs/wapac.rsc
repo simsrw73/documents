@@ -1,4 +1,4 @@
-# mar/25/2022 08:16:28 by RouterOS 7.1.2
+# mar/25/2022 18:59:52 by RouterOS 7.1.2
 # software id = YCAH-QLG1
 #
 # model = RBwAPG-5HacD2HnD
@@ -93,6 +93,10 @@ set strong-crypto=yes
 set time-zone-name=America/New_York
 /system identity
 set name=AP02-Patio
+/system ntp client
+set enabled=yes mode=multicast
+/system ntp client servers
+add address=192.168.99.1
 /system routerboard settings
 set cpu-frequency=auto
 /tool mac-server

@@ -1,4 +1,4 @@
-# mar/20/2022 20:43:31 by RouterOS 7.1.3
+# mar/25/2022 18:57:47 by RouterOS 7.1.3
 # software id = 1U75-R59F
 #
 # model = CRS112-8G-4S
@@ -25,9 +25,9 @@ add bridge=bridge comment="[Trunk] Bedroom Entertainment Switch" frame-types=\
     admit-only-vlan-tagged interface=ether2
 add bridge=bridge comment="Kadziel (PC-Win-Server)" frame-types=\
     admit-only-untagged-and-priority-tagged interface=ether3 pvid=200
-add bridge=bridge interface=ether4 pvid=99
+add bridge=bridge comment="Cassiel (PC-Win-Desktop)" interface=ether4 pvid=99
 add bridge=bridge comment="Yealink W60B VOIP Phone" frame-types=\
-    admit-only-untagged-and-priority-tagged interface=ether5 pvid=99
+    admit-only-untagged-and-priority-tagged interface=ether5 pvid=111
 add bridge=bridge comment="Canon MB 5320 Printer/Fax" frame-types=\
     admit-only-untagged-and-priority-tagged interface=ether6 pvid=99
 add bridge=bridge comment="Lutron Smart Bridge" frame-types=\

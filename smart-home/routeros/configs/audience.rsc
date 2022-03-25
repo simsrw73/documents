@@ -1,4 +1,4 @@
-# mar/22/2022 20:49:11 by RouterOS 7.1.2
+# mar/25/2022 18:59:20 by RouterOS 7.1.2
 # software id = L4BD-ZE0J
 #
 # model = RBD25G-5HPacQD2HPnD
@@ -152,7 +152,7 @@ set time-zone-name=America/New_York
 /system identity
 set name=AP01-Office
 /system ntp client
-set enabled=yes mode=broadcast
+set enabled=yes mode=multicast
 /system ntp client servers
 add address=192.168.99.1
 /system routerboard settings

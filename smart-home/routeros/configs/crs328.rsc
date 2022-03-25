@@ -1,4 +1,4 @@
-# mar/13/2022 20:45:48 by RouterOS 7.1.3
+# mar/25/2022 18:58:38 by RouterOS 7.1.3
 # software id = K7J1-43V8
 #
 # model = CRS328-24P-4S+
@@ -79,7 +79,7 @@ set time-zone-name=America/New_York
 /system identity
 set name=SW02-Office-NR5
 /system ntp client
-set enabled=yes mode=broadcast
+set enabled=yes mode=multicast
 /system ntp client servers
 add address=192.168.99.1
 /system routerboard settings
