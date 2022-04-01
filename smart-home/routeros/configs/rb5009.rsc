@@ -1,4 +1,4 @@
-# mar/25/2022 19:02:59 by RouterOS 7.1.5
+# apr/01/2022 10:45:44 by RouterOS 7.1.5
 # software id = SYTB-ZK4C
 #
 # model = RB5009UG+S+
@@ -21,6 +21,7 @@ add interface=bridge name=vlan-voip vlan-id=111
 add name=WAN
 add name=VLAN
 add name=BASE
+add name=TRUSTED
 /interface wireless security-profiles
 set [ find default=yes ] supplicant-identity=MikroTik
 /ip pool
@@ -29,7 +30,7 @@ add name=dhcp_pool-guest ranges=192.168.101.21-192.168.101.254
 add name=dhcp_pool-iot ranges=192.168.107.21-192.168.107.254
 add name=dhcp_pool-security ranges=192.168.119.21-192.168.119.254
 add name=dhcp_pool-voip ranges=192.168.111.21-192.168.111.254
-add name=dhcp_pool-server ranges=192.168.200.20-192.168.200.254
+add name=dhcp_pool-server ranges=192.168.200.200-192.168.200.249
 /ip dhcp-server
 add address-pool=dhcp_pool-base interface=vlan-base name=dhcp-base
 add address-pool=dhcp_pool-guest interface=vlan-guest name=dhcp-guest
@@ -39,8 +40,7 @@ add address-pool=dhcp_pool-security interface=vlan-security name=\
 add address-pool=dhcp_pool-voip interface=vlan-voip name=dhcp-voip
 add address-pool=dhcp_pool-server interface=vlan-server name=dhcp-server
 /interface bridge port
-add bridge=bridge frame-types=admit-only-untagged-and-priority-tagged \
-    interface=ether2 pvid=99
+add bridge=bridge frame-types=admit-only-vlan-tagged interface=ether2
 add bridge=bridge frame-types=admit-only-vlan-tagged interface=ether3
 add bridge=bridge frame-types=admit-only-vlan-tagged interface=ether4
 add bridge=bridge frame-types=admit-only-vlan-tagged interface=ether5
@@ -67,6 +67,8 @@ add interface=vlan-base list=VLAN
 add interface=ether7-Access list=BASE
 add interface=vlan-security list=VLAN
 add interface=vlan-server list=VLAN
+add interface=vlan-voip list=VLAN
+add interface=ether7-Access list=TRUSTED
 /ip address
 add address=192.168.99.1/24 interface=vlan-base network=192.168.99.0
 add address=192.168.101.1/24 interface=vlan-guest network=192.168.101.0
@@ -86,8 +88,10 @@ add address=192.168.99.20 client-id=1:50:eb:f6:7e:73:de comment=Desktop \
     mac-address=50:EB:F6:7E:73:DE server=dhcp-base
 add address=192.168.200.10 client-id=1:24:4b:fe:5a:a9:9e mac-address=\
     24:4B:FE:5A:A9:9E server=dhcp-server
+add address=192.168.200.14 client-id=1:e4:5f:1:95:b2:43 mac-address=\
+    E4:5F:01:95:B2:43 server=dhcp-server
 /ip dhcp-server network
-add address=192.168.99.0/24 gateway=192.168.99.1
+add address=192.168.99.0/24 dns-server=192.168.99.1 gateway=192.168.99.1
 add address=192.168.101.0/24 dns-server=192.168.99.1 gateway=192.168.101.1
 add address=192.168.107.0/24 dns-server=192.168.99.1 gateway=192.168.107.1
 add address=192.168.111.0/24 dns-server=192.168.99.1 gateway=192.168.111.1
@@ -104,32 +108,50 @@ add address=192.168.200.10 name=wiki.home.arpa
 /ip firewall address-list
 add address=ec1a0fcc6b92.sn.mynetname.net list=WAN_IP
 add address=192.168.99.0/24 list=Clients
+add address=192.168.99.20 list=Admin
+add address=192.168.99.21 list=Admin
 /ip firewall filter
 add action=accept chain=input comment=\
     "defconf: accept established,related,untracked" connection-state=\
     established,related,untracked
-add action=accept chain=input comment="Allow VLAN_BASE" in-interface=\
-    vlan-base log=yes log-prefix=BASE
+add action=drop chain=input comment="defconf: drop invalid" connection-state=\
+    invalid
 add action=accept chain=input comment="defconf: accept ICMP" protocol=icmp
+add action=accept chain=input comment="Accept DNS (udp)" dst-port=53 \
+    in-interface-list=VLAN protocol=udp
+add action=accept chain=input comment="Accept DNS (tcp)" dst-port=53 \
+    in-interface-list=VLAN protocol=tcp
+add action=accept chain=input comment="Accept NTP" dst-port=123,12300 \
+    in-interface-list=VLAN protocol=udp
 add action=accept chain=input comment=\
     "defconf: accept to local loopback (for CAPsMAN)" dst-address=127.0.0.1
+add action=accept chain=input comment="Allow VLAN_BASE" in-interface=\
+    vlan-base log=yes log-prefix=BASE
+add action=reject chain=input comment="Reject icmp-admin-prohibited" \
+    in-interface-list=VLAN log=yes log-prefix=ICMP-ADMIN-PROHIBITED \
+    reject-with=icmp-admin-prohibited
 add action=drop chain=input comment="Drop everything else"
+add action=accept chain=forward comment="defconf: accept in ipsec policy" \
+    ipsec-policy=in,ipsec
+add action=accept chain=forward comment="defconf: accept out ipsec policy" \
+    ipsec-policy=out,ipsec
 add action=fasttrack-connection chain=forward comment="defconf: fasttrack" \
     connection-state=established,related hw-offload=yes
 add action=accept chain=forward comment=\
     "defconf: accept established,related,untracked" connection-state=\
     established,related,untracked
-add action=accept chain=forward comment="Allow VLAN" in-interface-list=VLAN \
-    log=yes log-prefix=VLAN out-interface-list=VLAN
+add action=drop chain=forward comment="defconf: drop invalid" \
+    connection-state=invalid
 add action=accept chain=forward comment="Allow VLAN access Internet" \
     connection-state=new in-interface-list=VLAN log=yes log-prefix=\
     VLAN->INTERNET: out-interface-list=WAN
-add action=accept chain=forward comment="Allow from WAN if DSTNATed" \
-    connection-nat-state=dstnat connection-state=new in-interface-list=WAN
-add action=accept chain=forward comment="defconf: accept in ipsec policy" \
-    ipsec-policy=in,ipsec
-add action=accept chain=forward comment="defconf: accept out ipsec policy" \
-    ipsec-policy=out,ipsec
+add action=accept chain=forward comment="Allow Inter-VLAN" in-interface=\
+    vlan-base log=yes log-prefix=VLAN out-interface=vlan-server
+add action=accept chain=forward comment=\
+    "Allow dst-nat from both WAN and LAN (including port forwarding)" \
+    connection-nat-state=dstnat
+add action=reject chain=forward comment="Reject icmp-admin-prohibited" log=\
+    yes log-prefix=ICMP-ADMIN-PROHIBITED reject-with=icmp-admin-prohibited
 add action=drop chain=forward comment="Drop everything else" log=yes
 /ip firewall nat
 add action=dst-nat chain=dstnat comment="Port Fwd for WWW" dst-address-list=\

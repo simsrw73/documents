@@ -1,4 +1,4 @@
-# mar/25/2022 18:58:38 by RouterOS 7.1.3
+# apr/01/2022 10:46:29 by RouterOS 7.1.5
 # software id = K7J1-43V8
 #
 # model = CRS328-24P-4S+
@@ -16,7 +16,7 @@ add interface=bridge name=vlan-base vlan-id=99
 /interface list
 add name=BASE
 /interface lte apn
-set [ find default=yes ] ip-type=ipv4
+set [ find default=yes ] ip-type=ipv4 use-network-apn=no
 /interface wireless security-profiles
 set [ find default=yes ] supplicant-identity=MikroTik
 /port

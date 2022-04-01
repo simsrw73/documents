@@ -1,4 +1,4 @@
-# mar/25/2022 18:57:47 by RouterOS 7.1.3
+# apr/01/2022 10:44:49 by RouterOS 7.1.5
 # software id = 1U75-R59F
 #
 # model = CRS112-8G-4S
@@ -14,18 +14,20 @@ add interface=bridge name=vlan-base vlan-id=99
 /interface list
 add name=BASE
 /interface lte apn
-set [ find default=yes ] ip-type=ipv4
+set [ find default=yes ] ip-type=ipv4 use-network-apn=no
 /interface wireless security-profiles
 set [ find default=yes ] supplicant-identity=MikroTik
 /port
 set 0 name=serial0
 /interface bridge port
-add bridge=bridge frame-types=admit-only-vlan-tagged interface=ether1
+add bridge=bridge comment="Kadziel (PC-Win-Server)" frame-types=\
+    admit-only-untagged-and-priority-tagged interface=ether1 pvid=200
 add bridge=bridge comment="[Trunk] Bedroom Entertainment Switch" frame-types=\
     admit-only-vlan-tagged interface=ether2
-add bridge=bridge comment="Kadziel (PC-Win-Server)" frame-types=\
+add bridge=bridge comment="Raziel (Pi 4b)" frame-types=\
     admit-only-untagged-and-priority-tagged interface=ether3 pvid=200
-add bridge=bridge comment="Cassiel (PC-Win-Desktop)" interface=ether4 pvid=99
+add bridge=bridge comment="Cassiel (PC-Win-Desktop)" frame-types=\
+    admit-only-untagged-and-priority-tagged interface=ether4 pvid=99
 add bridge=bridge comment="Yealink W60B VOIP Phone" frame-types=\
     admit-only-untagged-and-priority-tagged interface=ether5 pvid=111
 add bridge=bridge comment="Canon MB 5320 Printer/Fax" frame-types=\
