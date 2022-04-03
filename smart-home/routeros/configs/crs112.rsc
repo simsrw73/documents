@@ -1,4 +1,4 @@
-# apr/01/2022 10:44:49 by RouterOS 7.1.5
+# apr/03/2022 18:37:41 by RouterOS 7.1.5
 # software id = 1U75-R59F
 #
 # model = CRS112-8G-4S
@@ -47,16 +47,14 @@ set max-neighbor-entries=8192
 /ipv6 settings
 set disable-ipv6=yes max-neighbor-entries=8192
 /interface bridge vlan
-add bridge=bridge tagged=bridge,ether1,ether2,sfp9,sfp10,sfp11,sfp12 \
-    vlan-ids=99
-add bridge=bridge tagged=bridge,ether1,ether2,sfp9,sfp10,sfp11,sfp12 \
-    vlan-ids=101
-add bridge=bridge tagged=bridge,ether1,ether2,sfp9,sfp10,sfp11,sfp12 \
-    vlan-ids=107
-add bridge=bridge tagged=bridge,ether1,ether2,sfp9,sfp10,sfp11,sfp12 \
-    vlan-ids=111
-add bridge=bridge tagged=bridge,ether1,ether2,sfp9,sfp10,sfp11,sfp12 \
-    vlan-ids=200
+add bridge=bridge tagged=bridge,ether2,sfp9,sfp10,sfp11,sfp12 untagged=\
+    ether4,ether6 vlan-ids=99
+add bridge=bridge tagged=bridge,ether2,sfp9,sfp10,sfp11,sfp12 vlan-ids=101
+add bridge=bridge tagged=bridge,ether2,sfp9,sfp10,sfp11,sfp12 untagged=\
+    ether7,ether8 vlan-ids=107
+add bridge=bridge tagged=bridge,ether2,sfp9,sfp10,sfp11,sfp12 vlan-ids=111
+add bridge=bridge tagged=bridge,ether2,sfp9,sfp10,sfp11,sfp12 untagged=\
+    ether1,ether3 vlan-ids=200
 /interface list member
 add interface=vlan-base list=BASE
 /ip address
@@ -87,3 +85,5 @@ add address=192.168.99.1
 set allowed-interface-list=BASE
 /tool mac-server mac-winbox
 set allowed-interface-list=BASE
+/tool romon
+set enabled=yes

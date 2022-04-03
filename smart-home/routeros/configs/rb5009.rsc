@@ -1,4 +1,4 @@
-# apr/01/2022 10:45:44 by RouterOS 7.1.5
+# apr/03/2022 18:36:39 by RouterOS 7.1.5
 # software id = SYTB-ZK4C
 #
 # model = RB5009UG+S+
@@ -51,8 +51,7 @@ add bridge=bridge frame-types=admit-only-vlan-tagged interface=sfp-sfpplus1
 /ip neighbor discovery-settings
 set discover-interface-list=BASE
 /interface bridge vlan
-add bridge=bridge tagged=\
-    bridge,ether2,ether3,ether4,ether5,ether6,sfp-sfpplus1 vlan-ids=99
+add bridge=bridge tagged=bridge,sfp-sfpplus1 vlan-ids=99
 add bridge=bridge tagged=bridge,sfp-sfpplus1 vlan-ids=101
 add bridge=bridge tagged=bridge,sfp-sfpplus1 vlan-ids=107
 add bridge=bridge tagged=bridge,sfp-sfpplus1 vlan-ids=119
@@ -68,7 +67,6 @@ add interface=ether7-Access list=BASE
 add interface=vlan-security list=VLAN
 add interface=vlan-server list=VLAN
 add interface=vlan-voip list=VLAN
-add interface=ether7-Access list=TRUSTED
 /ip address
 add address=192.168.99.1/24 interface=vlan-base network=192.168.99.0
 add address=192.168.101.1/24 interface=vlan-guest network=192.168.101.0
@@ -76,7 +74,7 @@ add address=192.168.107.1/24 interface=vlan-iot network=192.168.107.0
 add address=192.168.9.11/24 interface=ether7-Access network=192.168.9.0
 add address=192.168.119.1/24 interface=vlan-security network=192.168.119.0
 add address=192.168.111.1/24 interface=vlan-voip network=192.168.111.0
-add address=192.168.200.0/24 interface=vlan-server network=192.168.200.0
+add address=192.168.200.1/24 interface=vlan-server network=192.168.200.0
 /ip cloud
 set ddns-enabled=yes update-time=no
 /ip dhcp-client
@@ -86,10 +84,10 @@ add address=192.168.99.15 client-id=1:60:12:8b:5c:43:5b comment=\
     "Canon MB5320 Printer" mac-address=60:12:8B:5C:43:5B server=dhcp-base
 add address=192.168.99.20 client-id=1:50:eb:f6:7e:73:de comment=Desktop \
     mac-address=50:EB:F6:7E:73:DE server=dhcp-base
-add address=192.168.200.10 client-id=1:24:4b:fe:5a:a9:9e mac-address=\
-    24:4B:FE:5A:A9:9E server=dhcp-server
 add address=192.168.200.14 client-id=1:e4:5f:1:95:b2:43 mac-address=\
     E4:5F:01:95:B2:43 server=dhcp-server
+add address=192.168.200.10 client-id=1:24:4b:fe:5a:a9:9e mac-address=\
+    24:4B:FE:5A:A9:9E server=dhcp-server
 /ip dhcp-server network
 add address=192.168.99.0/24 dns-server=192.168.99.1 gateway=192.168.99.1
 add address=192.168.101.0/24 dns-server=192.168.99.1 gateway=192.168.101.1
@@ -104,7 +102,11 @@ set allow-remote-requests=yes servers=\
 /ip dns static
 add address=192.168.200.10 name=zadkiel.home.arpa
 add address=192.168.99.20 name=cassiel.home.arpa
-add address=192.168.200.10 name=wiki.home.arpa
+add cname=zadkiel.home.arpa name=wiki.home.arpa type=CNAME
+add address=192.168.200.14 name=raziel.home.arpa
+add cname=zadkiel.home.arpa name=zadkiel type=CNAME
+add cname=raziel.home.arpa name=raziel type=CNAME
+add cname=cassie.home.arpa name=cassiel type=CNAME
 /ip firewall address-list
 add address=ec1a0fcc6b92.sn.mynetname.net list=WAN_IP
 add address=192.168.99.0/24 list=Clients
@@ -125,8 +127,9 @@ add action=accept chain=input comment="Accept NTP" dst-port=123,12300 \
     in-interface-list=VLAN protocol=udp
 add action=accept chain=input comment=\
     "defconf: accept to local loopback (for CAPsMAN)" dst-address=127.0.0.1
-add action=accept chain=input comment="Allow VLAN_BASE" in-interface=\
-    vlan-base log=yes log-prefix=BASE
+add action=accept chain=input in-interface-list=VLAN
+add action=accept chain=input comment="Allow VLAN_BASE" in-interface-list=\
+    BASE log=yes log-prefix=BASE
 add action=reject chain=input comment="Reject icmp-admin-prohibited" \
     in-interface-list=VLAN log=yes log-prefix=ICMP-ADMIN-PROHIBITED \
     reject-with=icmp-admin-prohibited
