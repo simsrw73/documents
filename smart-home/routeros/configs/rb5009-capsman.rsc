@@ -1,4 +1,4 @@
-# jun/03/2022 16:25:31 by RouterOS 7.2.3
+# jun/03/2022 17:02:28 by RouterOS 7.2.3
 # software id = SYTB-ZK4C
 #
 # model = RB5009UG+S+
@@ -102,6 +102,9 @@ add action=reject allow-signal-out-of-range=10s disabled=no ssid-regexp=""
 /caps-man manager
 set ca-certificate=CAPsMAN-CA-DC2C6E470FBF certificate=CAPsMAN-DC2C6E470FBF \
     enabled=yes upgrade-policy=suggest-same-version
+/caps-man manager interface
+set [ find default=yes ] forbid=yes
+add disabled=no interface=vlan-base
 /caps-man provisioning
 add action=create-dynamic-enabled comment="AP01-Office [Audience]" \
     master-configuration=cfg-BASE-2G-Ch1-DP-base-Sec-base name-format=\
