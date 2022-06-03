@@ -1,4 +1,4 @@
-# jun/03/2022 16:07:11 by RouterOS 7.2.3
+# jun/03/2022 16:25:31 by RouterOS 7.2.3
 # software id = SYTB-ZK4C
 #
 # model = RB5009UG+S+
@@ -95,6 +95,10 @@ set zt1 comment="ZeroTier Central controller - https://my.zerotier.com/" \
     port=9993
 /zerotier interface
 add instance=zt1 name=zerotier1 network=a84ac5c10a383fa0
+/caps-man access-list
+add action=accept allow-signal-out-of-range=10s disabled=no signal-range=\
+    -80..120 ssid-regexp=""
+add action=reject allow-signal-out-of-range=10s disabled=no ssid-regexp=""
 /caps-man manager
 set ca-certificate=CAPsMAN-CA-DC2C6E470FBF certificate=CAPsMAN-DC2C6E470FBF \
     enabled=yes upgrade-policy=suggest-same-version
@@ -355,10 +359,6 @@ add interval=25w5d name=schedule-UpdateCACerts on-event=\
     "/system/script/run script-UpdateCACerts" policy=\
     ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon \
     start-date=dec/30/2021 start-time=02:30:00
-add disabled=yes interval=1d name=schedule-UpdateDDNS on-event=\
-    "/system/script/run script-UpdateDDNS" policy=\
-    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon \
-    start-date=dec/30/2021 start-time=02:40:00
 /system script
 add dont-require-permissions=no name=script-UpdateCACerts owner=Yosef policy=\
     ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source="{\
@@ -374,35 +374,6 @@ add dont-require-permissions=no name=script-UpdateCACerts owner=Yosef policy=\
     \n      :log error (\"CACERT: Failed to update certificate trust store\");\
     \r\
     \n  };\r\
-    \n}"
-add dont-require-permissions=no name=script-UpdateDDNS owner=Yosef policy=\
-    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source="#\
-    \_Variables\r\
-    \n:local GoogleDNSUsername \"Xdb3ILxQVxc7raMT\"\r\
-    \n:local GoogleDNSPassword \"p3cM5AoNMvakMVnL\"\r\
-    \n:local hostName \"mysmarthome.network\"\r\
-    \n:local currentIP \"\"\r\
-    \n:local previousIP \"\"\r\
-    \n:local Results \"\"\r\
-    \n:local fileResults \"GoogleDNS.txt\"\r\
-    \n\r\
-    \n# Script\r\
-    \n:set currentIP [/ip cloud get public-address]\r\
-    \n:set previousIP [:resolve \"\$hostName\"]\r\
-    \n\r\
-    \n:if (\$currentIP != \$previousIP) do={\r\
-    \n    :do {\r\
-    \n        /tool fetch url=\"https://\$GoogleDNSUsername:\$GoogleDNSPasswor\
-    d@domains.google.com/nic/update\?hostname=\$hostName&myip=\$currentIP\" ht\
-    tp-header-field=\"User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:\
-    70.0) Gecko/20100101 Firefox/70.0\" mode=https dst-path=\$fileResults\r\
-    \n        :set Results [/file get \$fileResults contents];\r\
-    \n        :log info (\"DDNS Updater: GoogleDNS said this: \$Results\")\r\
-    \n    } on-error={ \r\
-    \n        :log error (\"DDNS Updater: GoogleDNS: script failed to set new \
-    IP address\") \r\
-    \n    }\r\
-    \n    /file remove \$fileResults\r\
     \n}"
 /tool mac-server
 set allowed-interface-list=BASE
