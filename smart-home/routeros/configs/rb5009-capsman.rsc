@@ -1,4 +1,4 @@
-# jun/04/2022 18:44:33 by RouterOS 7.2.3
+# jun/04/2022 19:18:25 by RouterOS 7.2.3
 # software id = SYTB-ZK4C
 #
 # model = RB5009UG+S+
@@ -102,6 +102,42 @@ add instance=zt1 name=zerotier1 network=a84ac5c10a383fa0
 add action=accept allow-signal-out-of-range=10s disabled=no signal-range=\
     -80..120 ssid-regexp=""
 add action=reject allow-signal-out-of-range=10s disabled=no ssid-regexp=""
+add action=accept allow-signal-out-of-range=10s disabled=no mac-address=\
+    74:E2:0C:A2:49:D5 ssid-regexp="IOT\$"
+add action=reject allow-signal-out-of-range=10s disabled=no mac-address=\
+    74:E2:0C:A2:49:D5 ssid-regexp=""
+add action=accept allow-signal-out-of-range=10s disabled=no mac-address=\
+    08:A6:BC:33:B0:13 ssid-regexp="IOT\$"
+add action=reject allow-signal-out-of-range=10s disabled=no mac-address=\
+    08:A6:BC:33:B0:13 ssid-regexp=""
+add action=accept allow-signal-out-of-range=10s disabled=no mac-address=\
+    F8:54:B8:97:35:2D ssid-regexp="IOT\$"
+add action=reject allow-signal-out-of-range=10s disabled=no mac-address=\
+    F8:54:B8:97:35:2D ssid-regexp=""
+add action=accept allow-signal-out-of-range=10s disabled=no mac-address=\
+    74:A7:EA:F1:DB:E5 ssid-regexp="IOT\$"
+add action=reject allow-signal-out-of-range=10s disabled=no mac-address=\
+    74:A7:EA:F1:DB:E5 ssid-regexp=""
+add action=accept allow-signal-out-of-range=10s disabled=no mac-address=\
+    10:96:93:C4:0F:47 ssid-regexp="IOT\$"
+add action=reject allow-signal-out-of-range=10s disabled=no mac-address=\
+    10:96:93:C4:0F:47 ssid-regexp=""
+add action=accept allow-signal-out-of-range=10s disabled=no mac-address=\
+    C8:6C:3D:03:D4:E5 ssid-regexp="IOT\$"
+add action=reject allow-signal-out-of-range=10s disabled=no mac-address=\
+    C8:6C:3D:03:D4:E5 ssid-regexp=""
+add action=accept allow-signal-out-of-range=10s disabled=no mac-address=\
+    FC:49:2D:A7:3D:29 ssid-regexp="IOT\$"
+add action=reject allow-signal-out-of-range=10s disabled=no mac-address=\
+    FC:49:2D:A7:3D:29 ssid-regexp=""
+add action=accept allow-signal-out-of-range=10s disabled=no mac-address=\
+    0C:EE:99:E6:93:BA ssid-regexp="IOT\$"
+add action=reject allow-signal-out-of-range=10s disabled=no mac-address=\
+    0C:EE:99:E6:93:BA ssid-regexp=""
+add action=accept allow-signal-out-of-range=10s disabled=no mac-address=\
+    D8:BE:65:54:93:23 ssid-regexp="IOT\$"
+add action=reject allow-signal-out-of-range=10s disabled=no mac-address=\
+    D8:BE:65:54:93:23 ssid-regexp=""
 /caps-man manager
 set ca-certificate=CAPsMAN-CA-DC2C6E470FBF certificate=CAPsMAN-DC2C6E470FBF \
     enabled=yes require-peer-certificate=yes
