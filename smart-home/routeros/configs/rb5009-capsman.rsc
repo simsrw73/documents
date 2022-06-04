@@ -1,4 +1,4 @@
-# jun/03/2022 17:02:28 by RouterOS 7.2.3
+# jun/04/2022 18:44:33 by RouterOS 7.2.3
 # software id = SYTB-ZK4C
 #
 # model = RB5009UG+S+
@@ -14,6 +14,7 @@ add band=2ghz-g/n control-channel-width=20mhz frequency=2462 name=\
 add admin-mac=DC:2C:6E:47:0F:C0 auto-mac=no name=bridge protocol-mode=none \
     vlan-filtering=yes
 /interface ethernet
+set [ find default-name=ether1 ] name=ether1-WAN
 set [ find default-name=ether7 ] name=ether7-Access
 set [ find default-name=sfp-sfpplus1 ] advertise=1000M-full,10000M-full \
     speed=1Gbps
@@ -31,15 +32,17 @@ add bridge=bridge name=datapath-iot vlan-id=107 vlan-mode=use-tag
 add bridge=bridge name=datapath-security vlan-id=119 vlan-mode=use-tag
 add bridge=bridge name=datapath-nest vlan-id=107 vlan-mode=use-tag
 /caps-man rates
-add basic=12Mbps name=rate-Minimum supported=\
-    12Mbps,18Mbps,24Mbps,36Mbps,48Mbps,54Mbps
+add basic=6Mbps name=rate-Minimum supported=\
+    6Mbps,9Mbps,12Mbps,18Mbps,24Mbps,36Mbps,48Mbps,54Mbps
 /caps-man security
 add authentication-types=wpa2-psk encryption=aes-ccm name=security-base
 add authentication-types=wpa2-psk encryption=aes-ccm name=security-guest
-add authentication-types=wpa2-psk encryption=aes-ccm name=security-iot
+add authentication-types=wpa-psk,wpa2-psk encryption=aes-ccm name=\
+    security-iot
 add authentication-types=wpa2-psk encryption=aes-ccm name=security-security
 add authentication-types=wpa2-psk encryption=aes-ccm name=security-voip
-add authentication-types=wpa2-psk encryption=aes-ccm name=security-nest
+add authentication-types=wpa-psk,wpa2-psk encryption=aes-ccm name=\
+    security-nest
 /caps-man configuration
 add channel=channel-2G-Ch1 country="united states3" datapath=datapath-base \
     installation=any mode=ap name=cfg-BASE-2G-Ch1-DP-base-Sec-base rates=\
@@ -70,7 +73,7 @@ add name=TRUSTED
 /interface wireless security-profiles
 set [ find default=yes ] supplicant-identity=MikroTik
 /ip pool
-add name=dhcp_pool-base ranges=192.168.99.31-192.168.99.254
+add name=dhcp_pool-base ranges=192.168.99.100-192.168.99.199
 add name=dhcp_pool-guest ranges=192.168.101.21-192.168.101.254
 add name=dhcp_pool-iot ranges=192.168.107.21-192.168.107.254
 add name=dhcp_pool-security ranges=192.168.119.21-192.168.119.254
@@ -101,7 +104,7 @@ add action=accept allow-signal-out-of-range=10s disabled=no signal-range=\
 add action=reject allow-signal-out-of-range=10s disabled=no ssid-regexp=""
 /caps-man manager
 set ca-certificate=CAPsMAN-CA-DC2C6E470FBF certificate=CAPsMAN-DC2C6E470FBF \
-    enabled=yes upgrade-policy=suggest-same-version
+    enabled=yes require-peer-certificate=yes
 /caps-man manager interface
 set [ find default=yes ] forbid=yes
 add disabled=no interface=vlan-base
@@ -136,27 +139,19 @@ add action=create-dynamic-enabled comment=\
     cfg-slave-GUEST-5G-DP-guest-Sec-guest
 /interface bridge port
 add bridge=bridge frame-types=admit-only-vlan-tagged interface=ether2
-add bridge=bridge frame-types=admit-only-vlan-tagged interface=ether3
-add bridge=bridge frame-types=admit-only-vlan-tagged interface=ether4
-add bridge=bridge frame-types=admit-only-untagged-and-priority-tagged \
-    interface=ether5 pvid=99
-add bridge=bridge frame-types=admit-only-untagged-and-priority-tagged \
-    interface=ether6 pvid=99
-add bridge=bridge frame-types=admit-only-untagged-and-priority-tagged \
-    interface=ether8 pvid=99
 add bridge=bridge frame-types=admit-only-vlan-tagged interface=sfp-sfpplus1
 add bridge=bridge interface=zerotier1
 /ip neighbor discovery-settings
 set discover-interface-list=BASE
 /interface bridge vlan
-add bridge=bridge tagged=bridge,sfp-sfpplus1 untagged=ether5 vlan-ids=99
+add bridge=bridge tagged=bridge,sfp-sfpplus1 vlan-ids=99
 add bridge=bridge tagged=bridge,sfp-sfpplus1 vlan-ids=101
 add bridge=bridge tagged=bridge,sfp-sfpplus1 vlan-ids=107
 add bridge=bridge tagged=bridge,sfp-sfpplus1 vlan-ids=119
 add bridge=bridge tagged=bridge,sfp-sfpplus1 vlan-ids=111
 add bridge=bridge tagged=bridge,sfp-sfpplus1 vlan-ids=200
 /interface list member
-add interface=ether1 list=WAN
+add interface=ether1-WAN list=WAN
 add interface=vlan-guest list=VLAN
 add interface=vlan-iot list=VLAN
 add interface=vlan-base list=BASE
@@ -180,7 +175,7 @@ add address=192.168.200.1/24 interface=vlan-server network=192.168.200.0
 /ip cloud
 set ddns-enabled=yes update-time=no
 /ip dhcp-client
-add interface=ether1 use-peer-dns=no
+add interface=ether1-WAN use-peer-dns=no
 /ip dhcp-server lease
 add address=192.168.99.15 client-id=1:60:12:8b:5c:43:5b comment=\
     "Canon MB5320 Printer" mac-address=60:12:8B:5C:43:5B server=dhcp-base
@@ -190,6 +185,14 @@ add address=192.168.200.200 mac-address=36:59:4B:91:03:74 server=dhcp-server
 add address=192.168.200.201 client-id=\
     ff:2f:bd:15:e7:0:1:0:1:2a:23:8d:e4:76:f:2f:bd:15:e7 mac-address=\
     76:0F:2F:BD:15:E7 server=dhcp-server
+add address=192.168.99.20 client-id=1:50:eb:f6:7e:73:de mac-address=\
+    50:EB:F6:7E:73:DE server=dhcp-base
+add address=192.168.99.11 client-id=1:8:55:31:69:f3:2f mac-address=\
+    08:55:31:69:F3:2F server=dhcp-base
+add address=192.168.99.12 client-id=1:dc:2c:6e:1e:81:f8 mac-address=\
+    DC:2C:6E:1E:81:F8 server=dhcp-base
+add address=192.168.99.13 client-id=1:8:55:31:d9:23:a2 mac-address=\
+    08:55:31:D9:23:A2 server=dhcp-base
 /ip dhcp-server network
 add address=192.168.99.0/24 caps-manager=192.168.99.1 dns-server=192.168.99.1 \
     gateway=192.168.99.1 ntp-server=192.168.99.1
@@ -249,6 +252,8 @@ add action=accept chain=forward comment="Allow VLAN access Internet" \
     connection-state=new in-interface-list=VLAN out-interface-list=WAN
 add action=accept chain=forward comment="Allow BASE to Server VLAN" \
     in-interface-list=BASE out-interface=vlan-server
+add action=accept chain=forward comment="Allow Server VLAN to BASE" \
+    in-interface=vlan-server out-interface-list=BASE
 add action=accept chain=forward comment="Allow Inter-VLAN" in-interface=\
     vlan-base out-interface=vlan-security
 add action=accept chain=forward comment=\
@@ -261,7 +266,7 @@ add action=drop chain=forward comment="Drop everything else" log=yes \
 /ip firewall nat
 add action=dst-nat chain=dstnat comment="Port Fwd for WWW" dst-address-list=\
     WAN_IP dst-port=80,443 in-interface-list=WAN protocol=tcp to-addresses=\
-    192.168.200.201
+    192.168.99.20
 add action=src-nat chain=srcnat comment=\
     "Translate NTP from 123 to 12300 to bypass AT&T block of port 123" \
     protocol=udp src-port=123 to-ports=12300
