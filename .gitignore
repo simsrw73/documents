@@ -1,0 +1,4 @@
+
+# RouterOS binary backups and default export hold credentials
+*.backup
+smart-home/routeros/configs/rb5009-default.rsc
